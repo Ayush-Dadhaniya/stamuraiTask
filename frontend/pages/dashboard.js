@@ -3,6 +3,7 @@ import axios from 'axios';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -11,10 +12,23 @@ export default function Dashboard() {
   const [token, setToken] = useState(null);
   const [users, setUsers] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
+    if (!storedToken) return;
+
+    try {
+      const payload = JSON.parse(atob(storedToken.split('.')[1])); // decode JWT
+      if (payload.role === 'admin') {
+        router.push('/admin-dashboard'); // Redirect admin to admin dashboard
+        return;
+      }
+      setToken(storedToken);
+    } catch (err) {
+      console.error('Invalid token', err);
+      router.push('/login'); // fallback to login if token is invalid
+    }
   }, []);
 
   useEffect(() => {

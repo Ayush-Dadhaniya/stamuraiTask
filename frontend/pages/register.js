@@ -5,7 +5,13 @@ import Link from 'next/link';
 
 export default function Register() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'user',         // default role
+    adminSecret: ''       // optional admin secret
+  });
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
@@ -45,6 +51,25 @@ export default function Register() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
+
+        <select
+          className="w-full px-4 py-3 border rounded-lg mb-4 text-sm"
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
+          value={form.role}
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        {form.role === 'admin' && (
+          <input
+            type="text"
+            placeholder="Admin Secret"
+            className="w-full px-4 py-3 border rounded-lg mb-4 text-sm"
+            onChange={(e) => setForm({ ...form, adminSecret: e.target.value })}
+            required
+          />
+        )}
 
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
 

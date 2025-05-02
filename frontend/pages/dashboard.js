@@ -21,14 +21,14 @@ export default function Dashboard() {
     if (!token) return;
 
     axios
-      .get('http://localhost:5000/tasks', {
+      .get('https://stamuraitask-production.up.railway.app/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setTasks(res.data))
       .catch((err) => console.error('Error loading tasks', err));
 
     axios
-      .get('http://localhost:5000/users', {
+      .get('https://stamuraitask-production.up.railway.app/users', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUsers(res.data))
@@ -39,7 +39,7 @@ export default function Dashboard() {
     if (!token) return;
 
     axios
-      .get('http://localhost:5000/tasks', {
+      .get('https://stamuraitask-production.up.railway.app/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setTasks(res.data))
@@ -53,7 +53,7 @@ export default function Dashboard() {
   const handleDelete = async (taskId) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {
-      await axios.delete(`http://localhost:5000/tasks/${taskId}`, {
+      await axios.delete(`https://stamuraitask-production.up.railway.app/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       refreshTasks();

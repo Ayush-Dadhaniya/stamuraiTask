@@ -34,12 +34,12 @@ export default function TaskForm({ refreshTasks, token, users, editingTask, setE
 
     try {
       if (editingTask) {
-        await axios.put(`http://localhost:5000/tasks/${editingTask._id}`, data, {
+        await axios.put(`https://stamuraitask-production.up.railway.app/tasks/${editingTask._id}`, data, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setEditingTask(null);
       } else {
-        await axios.post('http://localhost:5000/tasks', data, {
+        await axios.post('https://stamuraitask-production.up.railway.app/tasks', data, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

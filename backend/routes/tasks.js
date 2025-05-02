@@ -16,6 +16,21 @@ function authMiddleware(req, res, next) {
 }
 
 router.use(authMiddleware);
+// backend/routes/task.js
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    let tasks;
+    if (req.user.role === 'admin') {
+      tasks = await Task.find().populate('createdBy assignedTo', 'name email');
+    } else {
+      tasks = await Task.find({ createdBy: req.user.id });
+    }
+    res.json(tasks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch tasks' });
+  }
+});
 
 // Create a new task
 router.post('/', async (req, res) => {

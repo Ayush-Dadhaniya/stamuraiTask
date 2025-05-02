@@ -1,18 +1,17 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config(); // Make sure to call this early in your app
+require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.MAILTRAP_HOST,
-  port: process.env.MAILTRAP_PORT,
+  service: 'gmail',
   auth: {
-    user: process.env.MAILTRAP_USER,
-    pass: process.env.MAILTRAP_PASS,
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS, // App password, not your Gmail password
   },
 });
 
 async function sendAssignmentEmail(toEmail, taskTitle, assigner) {
   const mailOptions = {
-    from: '"Task Manager" <no-reply@taskmanager.com>',
+    from: `"Task Manager" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: 'New Task Assigned',
     text: `${assigner} assigned you a task: "${taskTitle}"`,
@@ -20,7 +19,7 @@ async function sendAssignmentEmail(toEmail, taskTitle, assigner) {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${toEmail}`, info.messageId);
+    console.log(`✅ Email sent to ${toEmail}:`, info.messageId);
   } catch (error) {
     console.error('❌ Failed to send email:', error);
   }

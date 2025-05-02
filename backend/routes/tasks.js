@@ -1,6 +1,9 @@
 const express = require('express');
 const Task = require('../models/Task');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const sendAssignmentEmail = require('../utils/mailer');
+
 const router = express.Router();
 
 // Middleware to verify JWT token and attach user info to request
@@ -58,6 +61,15 @@ router.post('/', async (req, res) => {
     });
 
     await task.save();
+
+    // Send assignment email if applicable
+    if (task.assignedTo) {
+      const assignedUser = await User.findById(task.assignedTo);
+      if (assignedUser && assignedUser.email) {
+        await sendAssignmentEmail(assignedUser.email, task.title, req.user.name || 'Someone');
+      }
+    }
+
     res.status(201).json(task);
   } catch (err) {
     console.error('Error creating task:', err);
@@ -68,8 +80,17 @@ router.post('/', async (req, res) => {
 // ✅ PUT update a task
 router.put('/:id', async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('assignedTo createdBy', 'name email');
-    res.json(task);
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('assignedTo createdBy', 'name email');
+
+    // If reassigned, send email to new assignee
+    if (req.body.assignedTo) {
+      const assignedUser = await User.findById(req.body.assignedTo);
+      if (assignedUser && assignedUser.email) {
+        await sendAssignmentEmail(assignedUser.email, updatedTask.title, req.user.name || 'Someone');
+      }
+    }
+
+    res.json(updatedTask);
   } catch (err) {
     console.error('Error updating task:', err);
     res.status(400).json({ message: 'Failed to update task' });

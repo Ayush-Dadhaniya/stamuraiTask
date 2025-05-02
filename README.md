@@ -1,5 +1,6 @@
 # Task Management System
 
+### Use email: admin@gmail.com password: admin  for admin dashboard and normal view you can register yorself and create task.
 ## Overview
 This is a task management system that allows users to create, edit, and manage tasks. The system includes role-based access control, with an admin dashboard to view and manage all tasks, and a user dashboard where regular users can view and manage their tasks. Users are able to assign tasks to others, set priorities, and set due dates.
 

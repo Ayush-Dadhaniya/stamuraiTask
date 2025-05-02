@@ -5,29 +5,38 @@ const router = express.Router();
 
 // Middleware to verify JWT token
 function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.sendStatus(401);
+  const token = req.headers.authorization?.split(' ')[1]; // Get token from header
+  if (!token) return res.sendStatus(401); // Unauthorized if no token is present
   try {
-    req.user = jwt.verify(token, 'secretKey');
-    next();
-  } catch {
-    res.sendStatus(403);
+    req.user = jwt.verify(token, 'secretKey'); // Verify token
+    next(); // Proceed if token is valid
+  } catch (err) {
+    res.sendStatus(403); // Forbidden if token is invalid
   }
 }
 
+// Apply authMiddleware to all routes
 router.use(authMiddleware);
-// backend/routes/task.js
-router.get('/', authenticateToken, async (req, res) => {
+
+// Get tasks (created by or assigned to the user)
+router.get('/', async (req, res) => {
   try {
     let tasks;
     if (req.user.role === 'admin') {
+      // If user is an admin, fetch all tasks with populated user details
       tasks = await Task.find().populate('createdBy assignedTo', 'name email');
     } else {
-      tasks = await Task.find({ createdBy: req.user.id });
+      // If not admin, fetch tasks that are either created by or assigned to the user
+      tasks = await Task.find({
+        $or: [
+          { createdBy: req.user.userId }, 
+          { assignedTo: req.user.userId }
+        ]
+      }).populate('createdBy assignedTo', 'name email'); // Populate createdBy and assignedTo with user details
     }
     res.json(tasks);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching tasks:', err);
     res.status(500).json({ message: 'Failed to fetch tasks' });
   }
 });
@@ -35,31 +44,12 @@ router.get('/', authenticateToken, async (req, res) => {
 // Create a new task
 router.post('/', async (req, res) => {
   try {
-    const task = new Task({ ...req.body, createdBy: req.user.userId });
+    const task = new Task({ ...req.body, createdBy: req.user.userId }); // Set createdBy to the current user's ID
     await task.save();
-    res.status(201).send(task);
+    res.status(201).send(task); // Send created task back in response
   } catch (err) {
     console.error('Error creating task:', err);
     res.status(400).send({ error: 'Failed to create task' });
-  }
-});
-
-// Get tasks (created by or assigned to the user), with usernames populated
-router.get('/', async (req, res) => {
-  try {
-    const tasks = await Task.find({
-      $or: [
-        { createdBy: req.user.userId },
-        { assignedTo: req.user.userId }
-      ]
-    })
-      .populate('assignedTo', 'username') // Populate assignedTo with username
-      .populate('createdBy', 'username'); // Populate createdBy with username
-
-    res.send(tasks);
-  } catch (err) {
-    console.error('Error fetching tasks:', err);
-    res.status(500).send({ error: 'Failed to fetch tasks' });
   }
 });
 
@@ -67,7 +57,7 @@ router.get('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.send(task);
+    res.send(task); // Send updated task back in response
   } catch (err) {
     console.error('Error updating task:', err);
     res.status(400).send({ error: 'Failed to update task' });
@@ -77,8 +67,8 @@ router.put('/:id', async (req, res) => {
 // Delete a task
 router.delete('/:id', async (req, res) => {
   try {
-    await Task.findByIdAndDelete(req.params.id);
-    res.send({ message: 'Task deleted' });
+    await Task.findByIdAndDelete(req.params.id); // Delete task by ID
+    res.send({ message: 'Task deleted' }); // Send success message
   } catch (err) {
     console.error('Error deleting task:', err);
     res.status(500).send({ error: 'Failed to delete task' });

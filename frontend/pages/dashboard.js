@@ -8,9 +8,10 @@ export default function Dashboard() {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ status: '', priority: '', dueDate: '' });
   const [token, setToken] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [editingTask, setEditingTask] = useState(null);
 
   useEffect(() => {
-    // Access localStorage only on the client side
     const storedToken = localStorage.getItem('token');
     setToken(storedToken);
   }, []);
@@ -24,7 +25,41 @@ export default function Dashboard() {
       })
       .then((res) => setTasks(res.data))
       .catch((err) => console.error('Error loading tasks', err));
+
+    axios
+      .get('http://localhost:5000/users', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.error('Error loading users', err));
   }, [token]);
+
+  const refreshTasks = () => {
+    if (!token) return;
+
+    axios
+      .get('http://localhost:5000/tasks', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setTasks(res.data))
+      .catch((err) => console.error('Error loading tasks', err));
+  };
+
+  const handleEdit = (task) => {
+    setEditingTask(task);
+  };
+
+  const handleDelete = async (taskId) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) return;
+    try {
+      await axios.delete(`http://localhost:5000/tasks/${taskId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      refreshTasks();
+    } catch (err) {
+      console.error('Error deleting task', err);
+    }
+  };
 
   const isOverdue = (dueDate, status) => {
     return new Date(dueDate) < new Date() && status !== 'completed';
@@ -44,56 +79,93 @@ export default function Dashboard() {
   });
 
   if (!token) {
-    return <p className="p-4">Loading...</p>; // or redirect to login
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <p className="text-lg text-gray-600">Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-
-      <TaskForm />
-
-      <div className="mt-4 mb-2">
-        <input
-          className="border p-2 mr-2"
-          type="text"
-          placeholder="Search tasks..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select
-          className="border p-2 mr-2"
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-200 p-4 sm:p-6 md:p-10">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2 sm:mb-0">
+          Your Dashboard 🧠✨
+        </h1>
+        <a
+          href="/"
+          className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition"
         >
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="in progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
-        <select
-          className="border p-2 mr-2"
-          onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-        >
-          <option value="">All Priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <input
-          className="border p-2"
-          type="date"
-          onChange={(e) => setFilters({ ...filters, dueDate: e.target.value })}
+          🏠 Home
+        </a>
+      </div>
+
+
+
+      <div className="mb-8">
+        <TaskForm
+          refreshTasks={refreshTasks}
+          token={token}
+          users={users}
+          editingTask={editingTask}
+          setEditingTask={setEditingTask}
         />
       </div>
 
+      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">🔍 Filter Tasks</h2>
+
+        <div className="flex flex-wrap gap-3">
+          <input
+            className="flex-1 min-w-[160px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm"
+            type="text"
+            placeholder="Search by title or description"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select
+            className="px-4 py-2 border rounded-md text-sm"
+            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          >
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <select
+            className="px-4 py-2 border rounded-md text-sm"
+            onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
+          >
+            <option value="">All Priority</option>
+            <option value="low">Low</option>
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+          </select>
+          <input
+            className="px-4 py-2 border rounded-md text-sm"
+            type="date"
+            onChange={(e) => setFilters({ ...filters, dueDate: e.target.value })}
+          />
+        </div>
+      </div>
+
       <div>
-        <h2 className="text-xl font-semibold mb-2">Filtered Tasks</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 Your Tasks</h2>
         {filteredTasks.length === 0 ? (
-          <p>No tasks found</p>
+          <p className="text-gray-600 text-center">No matching tasks found 🚫</p>
         ) : (
-          filteredTasks.map((task) => (
-            <TaskCard key={task._id} task={task} isOverdue={isOverdue(task.dueDate, task.status)} />
-          ))
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredTasks.map((task) => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                isOverdue={isOverdue}
+                users={users}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

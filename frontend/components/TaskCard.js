@@ -1,13 +1,21 @@
-export default function TaskCard({ task, isOverdue }) {
+export default function TaskCard({ task, isOverdue, users, onEdit, onDelete }) {
+  const assignedUser = users?.find((u) => u._id === task.assignedTo?._id);
+
   return (
-    <div className={`border p-4 my-2 rounded ${isOverdue ? 'bg-red-100' : 'bg-white'}`}>
-      <h3 className="font-bold text-lg">{task.title}</h3>
-      <p>{task.description}</p>
-      <p>{task.assignedTo}</p>
-      <p>Status: {task.status}</p>
-      <p>Priority: {task.priority}</p>
-      <p>Due: {task.dueDate.slice(0, 10)}</p>
-      {isOverdue && <span className="text-red-600 font-semibold">Overdue</span>}
+    <div className="bg-white rounded-lg p-4 shadow hover:shadow-md transition-all">
+      <h3 className="text-lg font-bold text-gray-800">{task.title}</h3>
+      <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+      <p className="text-sm">👤 {assignedUser ? assignedUser.name : 'Unknown'}</p>
+      <p className={`text-sm ${isOverdue(task.dueDate, task.status) ? 'text-red-600' : ''}`}>
+        {task.status}
+      </p>
+      <p className="text-sm">Priority: {task.priority}</p>
+      <p className="text-sm">Due: {task.dueDate.slice(0, 10)}</p>
+
+      <div className="mt-3 flex gap-3">
+        <button onClick={() => onEdit(task)} className="text-blue-500 text-sm hover:underline">Edit</button>
+        <button onClick={() => onDelete(task._id)} className="text-red-500 text-sm hover:underline">Delete</button>
+      </div>
     </div>
   );
 }

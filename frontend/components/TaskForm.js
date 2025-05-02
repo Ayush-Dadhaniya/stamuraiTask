@@ -1,141 +1,144 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const TaskForm = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    dueDate: '',
-    priority: '',
-    status: '',
-    assignedTo: '',
-  });
-  const [users, setUsers] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(true); // Loading state for users
-  const [error, setError] = useState(''); // Error state for users fetch
-  const [loadingTask, setLoadingTask] = useState(false); // Loading state for task creation
+export default function TaskForm({ refreshTasks, token, users, editingTask, setEditingTask }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('normal');
+  const [status, setStatus] = useState('pending');
+  const [dueDate, setDueDate] = useState('');
+  const [assignedTo, setAssignedTo] = useState('');
 
-  // Fetch users for the "Assign to" dropdown
   useEffect(() => {
-    setLoadingUsers(true); // Set loading state to true
-    axios
-      .get('http://localhost:5000/users')
-      .then((res) => {
-        setUsers(res.data);
-        setLoadingUsers(false); // Set loading state to false once data is fetched
-      })
-      .catch((err) => {
-        console.error('Error fetching users', err);
-        setError('Failed to load users');
-        setLoadingUsers(false); // Set loading state to false on error
-      });
-  }, []);
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+    if (editingTask) {
+      setTitle(editingTask.title);
+      setDescription(editingTask.description);
+      setPriority(editingTask.priority);
+      setStatus(editingTask.status);
+      setDueDate(editingTask.dueDate.slice(0, 10));
+      setAssignedTo(editingTask.assignedTo?._id || '');
+    }
+  }, [editingTask]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingTask(true); // Set task creation loading to true
-    setError(''); // Reset error message
+
+    const data = {
+      title,
+      description,
+      priority,
+      status,
+      dueDate,
+      assignedTo,
+    };
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/tasks', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert('Task created');
-      setFormData({ // Reset the form after successful submission
-        title: '',
-        description: '',
-        dueDate: '',
-        priority: '',
-        status: '',
-        assignedTo: '',
-      });
+      if (editingTask) {
+        await axios.put(`http://localhost:5000/tasks/${editingTask._id}`, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setEditingTask(null);
+      } else {
+        await axios.post('http://localhost:5000/tasks', data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setPriority('normal');
+      setStatus('pending');
+      setDueDate('');
+      setAssignedTo('');
+      refreshTasks();
     } catch (err) {
-      console.error(err);
-      setError('Error creating task');
-    } finally {
-      setLoadingTask(false); // Set task creation loading to false after the request
+      console.error('Task save error', err);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        name="title"
-        placeholder="Title"
-        value={formData.title}
-        onChange={handleChange}
-        required
-      />
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="date"
-        name="dueDate"
-        value={formData.dueDate}
-        onChange={handleChange}
-        required
-      />
-      <select
-        name="priority"
-        value={formData.priority}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Priority</option>
-        <option value="Low">Low</option>
-        <option value="Normal">Normal</option>
-        <option value="High">High</option>
-      </select>
-      <select
-        name="status"
-        value={formData.status}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Status</option>
-        <option value="Pending">Pending</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-      </select>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-xl shadow-md mb-6">
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">
+        {editingTask ? '✏️ Edit Task' : '➕ Create New Task'}
+      </h2>
 
-      {/* User dropdown */}
-      {loadingUsers ? (
-        <p>Loading users...</p> // Display loading state while fetching users
-      ) : error ? (
-        <p className="text-red-500">{error}</p> // Display error if users fetch fails
-      ) : (
-        <select
-          name="assignedTo"
-          value={formData.assignedTo}
-          onChange={handleChange}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <input
+          className="p-2 border rounded"
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           required
+        />
+        <input
+          className="p-2 border rounded"
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          required
+        />
+
+        <select
+          className="p-2 border rounded"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
         >
-          <option value="">Assign to</option>
+          <option value="low">Low</option>
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+        </select>
+
+        <select
+          className="p-2 border rounded"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="pending">Pending</option>
+          <option value="in progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <select
+          className="p-2 border rounded"
+          value={assignedTo}
+          onChange={(e) => setAssignedTo(e.target.value)}
+        >
+          <option value="">Unassigned</option>
           {users.map((user) => (
-            <option key={user._id} className="text-black" value={user._id}>
+            <option key={user._id} value={user._id}>
               {user.name}
             </option>
           ))}
         </select>
-      )}
 
-      <button type="submit" disabled={loadingTask}>
-        {loadingTask ? 'Creating Task...' : 'Create Task'}
-      </button>
+        <textarea
+          className="p-2 border rounded sm:col-span-2"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
+      </div>
 
-      {error && <p className="text-red-500">{error}</p>} {/* Error display if task creation fails */}
+      <div className="mt-4 flex justify-between">
+        <button
+          type="submit"
+          className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+        >
+          {editingTask ? 'Update Task' : 'Create Task'}
+        </button>
+        {editingTask && (
+          <button
+            type="button"
+            onClick={() => setEditingTask(null)}
+            className="text-sm text-gray-600 underline"
+          >
+            Cancel Edit
+          </button>
+        )}
+      </div>
     </form>
   );
-};
-
-export default TaskForm;
+}

@@ -5,19 +5,62 @@ import api from '../services/api';
 export default function Register() {
   const router = useRouter();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
-    await api.post('/auth/register', form);
-    router.push('/login');
+    try {
+      await api.post('/auth/register', form);
+      router.push('/login');
+    } catch (err) {
+      console.error(err);
+      setError('Something went wrong. Please try again.');
+    }
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <input placeholder="Name" onChange={e => setForm({ ...form, name: e.target.value })} />
-      <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
-      <input type="password" placeholder="Password" onChange={e => setForm({ ...form, password: e.target.value })} />
-      <button onClick={handleSubmit}>Register</button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-600 px-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Join Us 💫</h1>
+        <p className="text-center text-gray-500 mb-6 text-sm">Create an account to get started</p>
+
+        <input
+          type="text"
+          placeholder="Name"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 mb-4 text-sm"
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 mb-4 text-sm"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 mb-4 text-sm"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+        />
+
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition duration-300 font-semibold"
+        >
+          Register
+        </button>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Already have an account?{' '}
+          <a href="/login" className="text-pink-600 hover:underline font-medium">
+            Log in
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

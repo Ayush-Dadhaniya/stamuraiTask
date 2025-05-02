@@ -38,9 +38,9 @@ export default function AdminDashboard() {
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2 sm:mb-0">
           Admin Dashboard 🧠✨
         </h1>
-        <Link href="/dashboard">
+        <Link href="/">
           <a className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
-            🏠 User Dashboard
+            🏠 Home
           </a>
         </Link>
       </div>

@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
@@ -18,26 +19,23 @@ export default function Home() {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <a
-          href="/login"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full text-lg transition"
-        >
-          Login
-        </a>
-        <a
-          href="/register"
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-full text-lg transition"
-        >
-          Register
-        </a>
+        <Link href="/login">
+          <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full text-lg transition">
+            Login
+          </a>
+        </Link>
+        <Link href="/register">
+          <a className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-full text-lg transition">
+            Register
+          </a>
+        </Link>
 
         {isLoggedIn && (
-          <a
-            href="/dashboard"
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-lg transition"
-          >
-            Go to Dashboard
-          </a>
+          <Link href="/dashboard">
+            <a className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-lg transition">
+              Go to Dashboard
+            </a>
+          </Link>
         )}
       </div>
     </div>

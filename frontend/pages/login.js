@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import api from '../services/api';
 import { saveToken } from '../utils/auth';
+import Link from 'next/link';
 
 export default function Login() {
   const router = useRouter();
@@ -40,20 +41,20 @@ export default function Login() {
           required
         />
 
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+        {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
         <button
           onClick={handleLogin}
-          className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold"
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition text-sm"
         >
-          Login
+          Log In
         </button>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-sm text-center text-gray-600 mt-6">
           Don’t have an account?{' '}
-          <a href="/register" className="text-purple-600 hover:underline font-medium">
-            Sign up
-          </a>
+          <Link href="/register">
+            <a className="text-purple-600 font-medium hover:underline">Register</a>
+          </Link>
         </p>
       </div>
     </div>

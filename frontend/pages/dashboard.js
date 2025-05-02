@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -92,15 +93,12 @@ export default function Dashboard() {
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2 sm:mb-0">
           Your Dashboard 🧠✨
         </h1>
-        <a
-          href="/"
-          className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition"
-        >
-          🏠 Home
-        </a>
+        <Link href="/">
+          <a className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+            🏠 Home
+          </a>
+        </Link>
       </div>
-
-
 
       <div className="mb-8">
         <TaskForm

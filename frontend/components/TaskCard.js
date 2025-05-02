@@ -1,5 +1,11 @@
-export default function TaskCard({ task, isOverdue, users, onEdit, onDelete }) {
-  const assignedUser = users?.find((u) => u._id === task.assignedTo?._id);
+export default function TaskCard({
+  task,
+  isOverdue = () => false,
+  users = [],
+  onEdit = () => {},
+  onDelete = () => {},
+}) {
+  const assignedUser = users.find((u) => u._id === task.assignedTo?._id);
 
   return (
     <div className="bg-white rounded-lg p-4 shadow hover:shadow-md transition-all">
@@ -10,11 +16,15 @@ export default function TaskCard({ task, isOverdue, users, onEdit, onDelete }) {
         {task.status}
       </p>
       <p className="text-sm">Priority: {task.priority}</p>
-      <p className="text-sm">Due: {task.dueDate.slice(0, 10)}</p>
+      <p className="text-sm">Due: {task.dueDate?.slice(0, 10)}</p>
 
       <div className="mt-3 flex gap-3">
-        <button onClick={() => onEdit(task)} className="text-blue-500 text-sm hover:underline">Edit</button>
-        <button onClick={() => onDelete(task._id)} className="text-red-500 text-sm hover:underline">Delete</button>
+        <button onClick={() => onEdit(task)} className="text-blue-500 text-sm hover:underline">
+          Edit
+        </button>
+        <button onClick={() => onDelete(task._id)} className="text-red-500 text-sm hover:underline">
+          Delete
+        </button>
       </div>
     </div>
   );

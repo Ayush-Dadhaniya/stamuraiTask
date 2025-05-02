@@ -1,6 +1,5 @@
-// backend/utils/mailer.js
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+require('dotenv').config(); // Make sure to call this early in your app
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAILTRAP_HOST,
@@ -20,8 +19,8 @@ async function sendAssignmentEmail(toEmail, taskTitle, assigner) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${toEmail}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent to ${toEmail}`, info.messageId);
   } catch (error) {
     console.error('❌ Failed to send email:', error);
   }

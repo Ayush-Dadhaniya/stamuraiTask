@@ -46,13 +46,6 @@ npm install
 
 ## ⚙️ Set Up Environment Variables
 Create a `.env` file in the root directory and add the following variables:
-
-```env
-MONGO_URL=mongodb+srv://ayushdadhaniya27:t47x2hHKAcK9FvRM@cluster.afjkxgl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster
-ADMIN_SECRET=myStrongSecretKey
-JWT_SECRET=someJwtSecretKey
-```
-
 > ⚠️ Replace `someJwtSecretKey` with a secure key of your choice.
 
 ---

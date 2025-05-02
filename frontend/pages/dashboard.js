@@ -12,22 +12,28 @@ export default function Dashboard() {
   const [token, setToken] = useState(null);
   const [users, setUsers] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (!storedToken) return;
+    if (!storedToken) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const payload = JSON.parse(atob(storedToken.split('.')[1])); // decode JWT
       if (payload.role === 'admin') {
         router.push('/admin-dashboard'); // Redirect admin to admin dashboard
-        return;
+      } else {
+        setToken(storedToken);
       }
-      setToken(storedToken);
     } catch (err) {
       console.error('Invalid token', err);
       router.push('/login'); // fallback to login if token is invalid
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -93,10 +99,18 @@ export default function Dashboard() {
     return matchesSearch && matchesFilters;
   });
 
-  if (!token) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-100">
         <p className="text-lg text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <p className="text-lg text-gray-600">Unauthorized. Please log in.</p>
       </div>
     );
   }

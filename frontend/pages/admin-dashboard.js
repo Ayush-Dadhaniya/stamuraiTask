@@ -25,7 +25,7 @@ export default function AdminDashboard() {
     if (!token) return;
 
     axios
-      .get('https://your-backend-url.com/tasks', {
+      .get('https://stamuraitask-production.up.railway.app/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setTasks(res.data))

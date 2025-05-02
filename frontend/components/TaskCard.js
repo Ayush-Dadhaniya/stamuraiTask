@@ -1,17 +1,16 @@
 export default function TaskCard({
   task,
   isOverdue = () => false,
-  users = [],
   onEdit = () => {},
   onDelete = () => {},
 }) {
-  const assignedUser = users.find((u) => u._id === task.assignedTo?._id);
+  const assignedName = task.assignedTo?.name || 'Unassigned';
 
   return (
     <div className="bg-white rounded-lg p-4 shadow hover:shadow-md transition-all">
       <h3 className="text-lg font-bold text-gray-800">{task.title}</h3>
       <p className="text-sm text-gray-600 mb-2">{task.description}</p>
-      <p className="text-sm">👤 {assignedUser ? assignedUser.name : 'Unknown'}</p>
+      <p className="text-sm">👤 {assignedName}</p>
       <p className={`text-sm ${isOverdue(task.dueDate, task.status) ? 'text-red-600' : ''}`}>
         {task.status}
       </p>

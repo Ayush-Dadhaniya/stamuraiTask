@@ -35,24 +35,28 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!token) return;
 
-    axios
-      .get('https://stamuraitask-production.up.railway.app/tasks', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setTasks(res.data))
-      .catch((err) => console.error('Error loading tasks', err));
+    const fetchTasksAndUsers = async () => {
+      try {
+        const tasksRes = await axios.get('https://stamuraitask-production.up.railway.app/tasks', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks(tasksRes.data);
 
-    axios
-      .get('https://stamuraitask-production.up.railway.app/users', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.error('Error loading users', err));
+        const usersRes = await axios.get('https://stamuraitask-production.up.railway.app/users', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(usersRes.data);
+      } catch (err) {
+        console.error('Error loading data:', err);
+      }
+    };
+
+    fetchTasksAndUsers();
   }, [token]);
 
   const refreshTasks = () => {
@@ -122,9 +126,9 @@ export default function Dashboard() {
           Your Dashboard 🧠✨
         </h1>
         <Link href="/">
-          <a className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition cursor-pointer">
             🏠 Home
-          </a>
+          </span>
         </Link>
       </div>
 

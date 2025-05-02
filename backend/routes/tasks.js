@@ -24,19 +24,16 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// Apply the middleware to all task routes
 router.use(authMiddleware);
 
-// ✅ GET all tasks (admin sees all, user sees relevant)
+// ✅ GET all tasks
 router.get('/', async (req, res) => {
   try {
     let tasks;
 
     if (req.user.role === 'admin') {
-      // Admin sees all tasks with user info populated
       tasks = await Task.find().populate('createdBy assignedTo', 'name email');
     } else {
-      // Regular users see tasks they created or are assigned to
       tasks = await Task.find({
         $or: [
           { createdBy: req.user.userId },
@@ -62,11 +59,15 @@ router.post('/', async (req, res) => {
 
     await task.save();
 
-    // Send assignment email if applicable
+    // Send email if task is assigned
     if (task.assignedTo) {
-      const assignedUser = await User.findById(task.assignedTo);
-      if (assignedUser && assignedUser.email) {
-        await sendAssignmentEmail(assignedUser.email, task.title, req.user.name || 'Someone');
+      const [assignedUser, currentUser] = await Promise.all([
+        User.findById(task.assignedTo),
+        User.findById(req.user.userId)
+      ]);
+
+      if (assignedUser?.email && currentUser?.name) {
+        await sendAssignmentEmail(assignedUser.email, task.title, currentUser.name);
       }
     }
 
@@ -82,11 +83,14 @@ router.put('/:id', async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('assignedTo createdBy', 'name email');
 
-    // If reassigned, send email to new assignee
     if (req.body.assignedTo) {
-      const assignedUser = await User.findById(req.body.assignedTo);
-      if (assignedUser && assignedUser.email) {
-        await sendAssignmentEmail(assignedUser.email, updatedTask.title, req.user.name || 'Someone');
+      const [assignedUser, currentUser] = await Promise.all([
+        User.findById(req.body.assignedTo),
+        User.findById(req.user.userId)
+      ]);
+
+      if (assignedUser?.email && currentUser?.name) {
+        await sendAssignmentEmail(assignedUser.email, updatedTask.title, currentUser.name);
       }
     }
 

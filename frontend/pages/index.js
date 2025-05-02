@@ -20,21 +20,21 @@ export default function Home() {
 
       <div className="flex flex-col sm:flex-row gap-4">
         <Link href="/login">
-          <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full text-lg transition">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full text-lg transition">
             Login
-          </a>
+          </button>
         </Link>
         <Link href="/register">
-          <a className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-full text-lg transition">
+          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-full text-lg transition">
             Register
-          </a>
+          </button>
         </Link>
 
         {isLoggedIn && (
           <Link href="/dashboard">
-            <a className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-lg transition">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-lg transition">
               Go to Dashboard
-            </a>
+            </button>
           </Link>
         )}
       </div>

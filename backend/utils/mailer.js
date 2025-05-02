@@ -1,36 +1,34 @@
-// utils/mailer.js
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  }
-});
-
-transporter.verify((err, success) => {
-  if (err) {
-    console.error('Transporter error:', err);
-  } else {
-    console.log('Ready to send email');
-  }
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
 });
 
 async function sendAssignmentEmail(toEmail, taskTitle, assigner) {
   const mailOptions = {
-    from: `"Task Manager" <${process.env.GMAIL_USER}>`,
+    from: `"Task Manager" <${process.env.SMTP_USER}>`,
     to: toEmail,
     subject: 'New Task Assigned',
-    text: `${assigner} assigned you a task: "${taskTitle}"`
+    text: `${assigner} assigned you a task: "${taskTitle}"`,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${toEmail}`);
+    const info = await transporter.sendMail(mailOptions);
+    if (info.accepted.length > 0) {
+      console.log(`✅ Email sent to ${toEmail}`);
+      console.log('Response:', info.response);  // Detailed response from the mail server
+    } else {
+      console.log('❌ Email was not accepted by the server.');
+    }
   } catch (error) {
     console.error('❌ Failed to send email:', error);
+    // Add more error handling here if necessary
   }
 }
 

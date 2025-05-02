@@ -2,34 +2,35 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import TaskCard from '../components/TaskCard';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 export default function AdminDashboard() {
   const [tasks, setTasks] = useState([]);
   const [token, setToken] = useState(null);
-  const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (!storedToken) return;
-
-    const payload = JSON.parse(atob(storedToken.split('.')[1]));
-    if (payload.role !== 'admin') {
-      router.push('/dashboard'); // Redirect to regular user dashboard if not admin
+    if (!storedToken) {
+      setToken(null);
+      return;
     }
-
     setToken(storedToken);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (!token) return;
 
-    axios
-      .get('https://stamuraitask-production.up.railway.app/tasks', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setTasks(res.data))
-      .catch((err) => console.error('Error loading tasks', err));
+    const fetchTasks = async () => {
+      try {
+        const res = await axios.get('https://stamuraitask-production.up.railway.app/tasks', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks(res.data);
+      } catch (err) {
+        console.error('Error loading tasks', err);
+      }
+    };
+
+    fetchTasks();
   }, [token]);
 
   return (
@@ -39,16 +40,16 @@ export default function AdminDashboard() {
           Admin Dashboard 🧠✨
         </h1>
         <Link href="/">
-          <a className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span className="inline-block px-5 py-2 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition cursor-pointer">
             🏠 Home
-          </a>
+          </span>
         </Link>
       </div>
 
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">📋 All Tasks</h2>
         {tasks.length === 0 ? (
-          <p className="text-gray-600 text-center">No tasks available 🚫</p>
+          <p className="text-gray-600 text-center">No tasks found 🚫</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tasks.map((task) => (

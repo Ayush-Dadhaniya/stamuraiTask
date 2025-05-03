@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="250" cy="250" r="240" fill="#ffffff" stroke="#e6e6e6" stroke-width="2"/>
+  
+  <!-- Logo Main Elements -->
+  <g transform="translate(90, 85) scale(0.65)">
+    <!-- Checklist Board Base -->
+    <rect x="60" y="80" width="280" height="340" rx="20" ry="20" fill="#3498db" filter="drop-shadow(5px 5px 10px rgba(0,0,0,0.2))"/>
+    
+    <!-- Checklist Paper -->
+    <rect x="80" y="120" width="240" height="280" rx="5" ry="5" fill="#f5f7fa" filter="drop-shadow(2px 2px 5px rgba(0,0,0,0.1))"/>
+    
+    <!-- Task Checkboxes and Lines -->
+    <!-- Task 1 - Checked -->
+    <rect x="110" y="160" width="20" height="20" rx="3" ry="3" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
+    <polyline points="115,170 122,177 132,165" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="140" y1="170" x2="270" y2="170" stroke="#95a5a6" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Task 2 - Checked -->
+    <rect x="110" y="200" width="20" height="20" rx="3" ry="3" fill="#2ecc71" stroke="#27ae60" stroke-width="1"/>
+    <polyline points="115,210 122,217 132,205" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="140" y1="210" x2="240" y2="210" stroke="#95a5a6" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Task 3 - In Progress -->
+    <rect x="110" y="240" width="20" height="20" rx="3" ry="3" fill="#f39c12" stroke="#d35400" stroke-width="1"/>
+    <circle cx="120" cy="250" r="5" fill="#ffffff"/>
+    <line x1="140" y1="250" x2="260" y2="250" stroke="#2c3e50" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Task 4 - Unchecked -->
+    <rect x="110" y="280" width="20" height="20" rx="3" ry="3" fill="#ffffff" stroke="#bdc3c7" stroke-width="1"/>
+    <line x1="140" y1="290" x2="250" y2="290" stroke="#2c3e50" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Task 5 - Unchecked -->
+    <rect x="110" y="320" width="20" height="20" rx="3" ry="3" fill="#ffffff" stroke="#bdc3c7" stroke-width="1"/>
+    <line x1="140" y1="330" x2="230" y2="330" stroke="#2c3e50" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Chart Element -->
+  <g transform="translate(300, 140) scale(0.38)" opacity="0.95">
+    <circle cx="150" cy="150" r="120" fill="#ffffff" stroke="#bdc3c7" stroke-width="3"/>
+    <!-- Pie Chart Sections -->
+    <path d="M150,30 A120,120 0 0,1 270,150 L150,150 Z" fill="#3498db"/>
+    <path d="M150,150 L270,150 A120,120 0 0,1 210,258 Z" fill="#2ecc71"/>
+    <path d="M150,150 L210,258 A120,120 0 0,1 30,140 Z" fill="#e74c3c"/>
+    <path d="M150,150 L30,140 A120,120 0 0,1 150,30 Z" fill="#f39c12"/>
+    <!-- Center Circle -->
+    <circle cx="150" cy="150" r="40" fill="#ffffff" stroke="#bdc3c7" stroke-width="2"/>
+  </g>
+  
+  <!-- Swoosh Lines - Repositioned higher without text -->
+  <path d="M125,380 Q175,395 250,400 T375,380" stroke="#3498db" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M125,390 Q175,405 250,410 T375,390" stroke="#2ecc71" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

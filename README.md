@@ -21,6 +21,61 @@ This is a task management system that allows users to create, edit, and manage t
 
 ---
 
+## 🚀 Vercel Deployment
+
+### Prerequisites
+- Vercel account
+- MongoDB Atlas account
+- Git repository
+
+### Environment Variables Setup
+
+#### Backend Environment Variables (set in Vercel dashboard)
+- `MONGO_URL`: Your MongoDB connection string
+- `JWT_SECRET`: A secure random string for JWT token signing
+- `ADMIN_SECRET`: A secure admin secret key
+- `NODE_ENV`: Set to `production`
+
+#### Frontend Environment Variables (set in Vercel dashboard)
+- `NEXT_PUBLIC_API_URL`: Your backend API URL
+
+### Deployment Steps
+
+#### Option 1: Deploy Backend and Frontend Separately (Recommended)
+
+1. **Deploy Backend:**
+   - Create a new Vercel project
+   - Set the root directory to `/backend`
+   - Configure environment variables in Vercel dashboard
+   - Deploy
+
+2. **Deploy Frontend:**
+   - Create another Vercel project
+   - Set the root directory to `/frontend`
+   - Update `frontend/services/api.js` with your backend URL
+   - Deploy
+
+#### Option 2: Deploy as Monorepo
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Set the root directory to `/` (root of the project)
+4. Configure environment variables in Vercel dashboard
+5. Deploy
+
+### API Routes
+After deployment, your API will be available at:
+- `/auth/*` - Authentication routes
+- `/tasks/*` - Task management routes
+- `/users/*` - User management routes
+
+### Troubleshooting 404 Errors
+- Ensure MongoDB connection string is correct
+- Verify environment variables are set in Vercel dashboard
+- Check Vercel function logs for any errors
+- Ensure your routes are properly configured
+
+---
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -45,8 +100,15 @@ npm install
 ---
 
 ## ⚙️ Set Up Environment Variables
-Create a `.env` file in the root directory and add the following variables:
-> ⚠️ Replace `someJwtSecretKey` with a secure key of your choice.
+Create a `.env` file in the `backend/` directory and add the following variables:
+```
+MONGO_URL=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+ADMIN_SECRET=your_admin_secret
+NODE_ENV=development
+```
+
+> ⚠️ Replace the values with secure keys of your choice.
 
 ---
 
@@ -56,6 +118,7 @@ Create a `.env` file in the root directory and add the following variables:
 Run the backend server locally:
 
 ```bash
+cd backend
 npm run dev
 ```
 
@@ -65,6 +128,7 @@ It will be available at: [http://localhost:5000](http://localhost:5000)
 To start the frontend:
 
 ```bash
+cd frontend
 npm run dev
 ```
 
@@ -80,7 +144,7 @@ It will be available at: [http://localhost:3000](http://localhost:3000)
 - We use **JWT (JSON Web Tokens)** for secure, stateless user authentication.
 - A middleware function verifies the JWT token for protected routes.
 - Tokens are stored on the client side and sent with each request in the `Authorization` header.
-- Based on the user’s `role` (`admin` or `user`), different levels of access are granted.
+- Based on the user's `role` (`admin` or `user`), different levels of access are granted.
 - Admins have full access to all tasks, while users can access only those they created or are assigned to.
 
 #### 2. Task Management
@@ -96,7 +160,7 @@ It will be available at: [http://localhost:3000](http://localhost:3000)
 ### Frontend (Next.js and React)
 
 #### 1. Role-Based UI
-- The frontend checks the user’s role and conditionally renders:
+- The frontend checks the user's role and conditionally renders:
   - Admins: View all tasks and users.
   - Users: View only relevant tasks (created or assigned).
 - The `TaskCard` component displays task info and actions like edit/delete.
@@ -126,7 +190,7 @@ It will be available at: [http://localhost:3000](http://localhost:3000)
   - Metadata like priority, status, and due date.
 
 #### 4. No Real-Time Features
-- The app doesn’t currently support real-time updates.
+- The app doesn't currently support real-time updates.
 - Page refresh or re-fetch is required to see task updates.
 
 ---

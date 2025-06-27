@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://stamurai-task-backend.vercel.app', // Adjust if your backend runs elsewhere
+  baseURL: process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:5000',
 });
 
 export default api;

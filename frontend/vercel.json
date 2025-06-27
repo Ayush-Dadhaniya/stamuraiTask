@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "pages/api/**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "MONGO_URL": "@mongo_url",
+    "JWT_SECRET": "@jwt_secret",
+    "ADMIN_SECRET": "@admin_secret"
+  }
+} 

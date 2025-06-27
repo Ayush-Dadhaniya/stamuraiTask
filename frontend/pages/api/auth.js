@@ -1,12 +1,12 @@
-import dbConnect from './_utils/db';
-import User from './_models/User';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+const dbConnect = require('./_utils/db');
+const User = require('./_models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'mySecretAdminKey';
 const JWT_SECRET = process.env.JWT_SECRET || 'secretKey';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Connect to database
   await dbConnect();
 

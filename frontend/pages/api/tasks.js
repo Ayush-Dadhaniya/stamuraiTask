@@ -1,10 +1,10 @@
-import dbConnect from './_utils/db';
-import Task from './_models/Task';
-import User from './_models/User';
-import authMiddleware from './_utils/auth';
-import sendAssignmentEmail from './_utils/mailer';
+const dbConnect = require('./_utils/db');
+const Task = require('./_models/Task');
+const User = require('./_models/User');
+const authMiddleware = require('./_utils/auth');
+const sendAssignmentEmail = require('./_utils/mailer');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Connect to database
   await dbConnect();
 

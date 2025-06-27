@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 export default function TaskForm({ refreshTasks, token, users, editingTask, setEditingTask }) {
   const [title, setTitle] = useState('');
@@ -34,14 +34,10 @@ export default function TaskForm({ refreshTasks, token, users, editingTask, setE
 
     try {
       if (editingTask) {
-        await axios.put(`https://stamuraitask-production.up.railway.app/tasks/${editingTask._id}`, data, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await api.put(`/tasks/${editingTask._id}`, data);
         setEditingTask(null);
       } else {
-        await axios.post('https://stamuraitask-production.up.railway.app/tasks', data, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await api.post('/tasks', data);
       }
 
       // Reset form
@@ -122,23 +118,12 @@ export default function TaskForm({ refreshTasks, token, users, editingTask, setE
         />
       </div>
 
-      <div className="mt-4 flex justify-between">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
-        >
-          {editingTask ? 'Update Task' : 'Create Task'}
-        </button>
-        {editingTask && (
-          <button
-            type="button"
-            onClick={() => setEditingTask(null)}
-            className="text-sm text-gray-600 underline"
-          >
-            Cancel Edit
-          </button>
-        )}
-      </div>
+      <button
+        type="submit"
+        className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+      >
+        {editingTask ? 'Update Task' : 'Create Task'}
+      </button>
     </form>
   );
 }

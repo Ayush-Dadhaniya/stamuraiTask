@@ -31,7 +31,6 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ message: 'User created successfully' });
   } catch (err) {
-    console.error('Registration error:', err);
     res.status(500).json({ message: 'Server error during registration' });
   }
 });
@@ -52,7 +51,6 @@ router.post('/login', async (req, res) => {
       res.status(401).json({ message: 'Invalid credentials' });
     }
   } catch (err) {
-    console.error('Login error:', err);
     res.status(500).json({ message: 'Server error during login' });
   }
 });

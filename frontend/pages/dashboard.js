@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 import Link from 'next/link';
@@ -42,14 +42,10 @@ export default function Dashboard() {
 
     const fetchTasksAndUsers = async () => {
       try {
-        const tasksRes = await axios.get('https://stamuraitask-production.up.railway.app/tasks', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const tasksRes = await api.get('/tasks');
         setTasks(tasksRes.data);
 
-        const usersRes = await axios.get('https://stamuraitask-production.up.railway.app/users', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const usersRes = await api.get('/users');
         setUsers(usersRes.data);
       } catch (err) {
         console.error('Error loading data:', err);
@@ -61,11 +57,8 @@ export default function Dashboard() {
 
   const refreshTasks = () => {
     if (!token) return;
-
-    axios
-      .get('https://stamuraitask-production.up.railway.app/tasks', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    api
+      .get('/tasks')
       .then((res) => setTasks(res.data))
       .catch((err) => console.error('Error loading tasks', err));
   };
@@ -77,9 +70,7 @@ export default function Dashboard() {
   const handleDelete = async (taskId) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {
-      await axios.delete(`https://stamuraitask-production.up.railway.app/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/tasks/${taskId}`);
       refreshTasks();
     } catch (err) {
       console.error('Error deleting task', err);

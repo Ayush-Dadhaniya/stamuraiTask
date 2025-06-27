@@ -1,37 +1,22 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import TaskCard from '../components/TaskCard';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
   const [tasks, setTasks] = useState([]);
-  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
-      setToken(null);
-      return;
-    }
-    setToken(storedToken);
-  }, []);
-
-  useEffect(() => {
-    if (!token) return;
-
     const fetchTasks = async () => {
       try {
-        const res = await axios.get('https://stamuraitask-production.up.railway.app/tasks', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('/tasks');
         setTasks(res.data);
       } catch (err) {
         console.error('Error loading tasks', err);
       }
     };
-
     fetchTasks();
-  }, [token]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-200 p-4 sm:p-6 md:p-10">

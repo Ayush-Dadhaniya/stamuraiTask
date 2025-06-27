@@ -7,11 +7,21 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL);
+const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB with better error handling
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 app.use(cors());
 app.use(express.json());
+
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 app.use('/auth', authRoutes);
 app.use('/tasks', taskRoutes);
@@ -24,7 +34,11 @@ app.get('/', (req, res) => {
 
 // Only listen on a port if not in Vercel
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(5000, () => console.log('Server running on http://localhost:5000'));
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('MongoDB URL:', process.env.MONGO_URL ? 'Set' : 'Not set');
+  });
 }
 
 module.exports = app;

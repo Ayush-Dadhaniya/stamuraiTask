@@ -1,14 +1,22 @@
-const dbConnect = require('./_utils/db');
-const User = require('./_models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import dbConnect from './_utils/db';
+import User from './_models/User';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'mySecretAdminKey';
 const JWT_SECRET = process.env.JWT_SECRET || 'secretKey';
 
-module.exports = async function handler(req, res) {
-  // Connect to database
-  await dbConnect();
+export default async function handler(req, res) {
+  try {
+    // Connect to database
+    await dbConnect();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return res.status(500).json({ 
+      message: 'Database connection failed. Please check your environment variables.',
+      error: error.message 
+    });
+  }
 
   if (req.method === 'POST') {
     const { action } = req.query;
@@ -39,7 +47,7 @@ module.exports = async function handler(req, res) {
         res.status(201).json({ message: 'User created successfully' });
       } catch (err) {
         console.error('Registration error:', err);
-        res.status(500).json({ message: 'Server error during registration' });
+        res.status(500).json({ message: 'Server error during registration', error: err.message });
       }
     } else if (action === 'login') {
       try {
@@ -57,7 +65,7 @@ module.exports = async function handler(req, res) {
         }
       } catch (err) {
         console.error('Login error:', err);
-        res.status(500).json({ message: 'Server error during login' });
+        res.status(500).json({ message: 'Server error during login', error: err.message });
       }
     } else {
       res.status(400).json({ message: 'Invalid action' });

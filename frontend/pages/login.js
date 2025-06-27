@@ -11,7 +11,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await api.post('/auth/login', form);
+      const res = await api.post('/auth?action=login', form);
       saveToken(res.data.token);
       router.push('/dashboard');
     } catch (err) {
@@ -51,7 +51,7 @@ export default function Login() {
         </button>
 
         <p className="text-sm text-center text-gray-600 mt-6">
-          Don’t have an account?{' '}
+          Don't have an account?{' '}
           <Link href="/register">
             <button className="text-purple-600 font-medium hover:underline">Register</button>
           </Link>

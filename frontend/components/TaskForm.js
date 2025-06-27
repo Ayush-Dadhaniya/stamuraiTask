@@ -34,7 +34,7 @@ export default function TaskForm({ refreshTasks, token, users, editingTask, setE
 
     try {
       if (editingTask) {
-        await api.put(`/tasks/${editingTask._id}`, data);
+        await api.put(`/tasks?id=${editingTask._id}`, data);
         setEditingTask(null);
       } else {
         await api.post('/tasks', data);

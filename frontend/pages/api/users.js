@@ -1,7 +1,7 @@
-const dbConnect = require('./_utils/db');
-const User = require('./_models/User');
+import dbConnect from './_utils/db';
+import User from './_models/User';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Connect to database
   await dbConnect();
 

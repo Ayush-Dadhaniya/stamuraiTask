@@ -70,7 +70,7 @@ export default function Dashboard() {
   const handleDelete = async (taskId) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {
-      await api.delete(`/tasks/${taskId}`);
+      await api.delete(`/tasks?id=${taskId}`);
       refreshTasks();
     } catch (err) {
       console.error('Error deleting task', err);

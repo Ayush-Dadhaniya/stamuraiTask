@@ -16,7 +16,7 @@ export default function Register() {
 
   const handleSubmit = async () => {
     try {
-      await api.post('/auth/register', form);
+      await api.post('/auth?action=register', form);
       router.push('/login');
     } catch (err) {
       console.error(err);

@@ -1,10 +1,8 @@
-const dbConnect = require('./_utils/db');
-const Task = require('./_models/Task');
-const User = require('./_models/User');
-const authMiddleware = require('./_utils/auth');
-const sendAssignmentEmail = require('./_utils/mailer');
+import dbConnect from './_utils/db';
+import Task from './_models/Task';
+import authMiddleware from './_utils/auth';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Connect to database
   await dbConnect();
 
@@ -45,18 +43,6 @@ module.exports = async function handler(req, res) {
 
       await task.save();
 
-      // Send email if task is assigned
-      if (task.assignedTo) {
-        const [assignedUser, currentUser] = await Promise.all([
-          User.findById(task.assignedTo),
-          User.findById(user.userId)
-        ]);
-
-        if (assignedUser?.email && currentUser?.name) {
-          await sendAssignmentEmail(assignedUser.email, task.title, currentUser.name);
-        }
-      }
-
       res.status(201).json(task);
     } catch (err) {
       console.error('Error creating task:', err);
@@ -67,21 +53,10 @@ module.exports = async function handler(req, res) {
       const { id } = req.query;
       const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true }).populate('assignedTo createdBy', 'name email');
 
-      if (req.body.assignedTo) {
-        const [assignedUser, currentUser] = await Promise.all([
-          User.findById(req.body.assignedTo),
-          User.findById(user.userId)
-        ]);
-
-        if (assignedUser?.email && currentUser?.name) {
-          await sendAssignmentEmail(assignedUser.email, updatedTask.title, currentUser.name);
-        }
-      }
-
       res.json(updatedTask);
     } catch (err) {
       console.error('Error updating task:', err);
-      res.status(400).json({ message: 'Failed to update task' });
+      res.status(500).json({ message: 'Failed to update task' });
     }
   } else if (req.method === 'DELETE') {
     try {
